@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Text, StyleSheet, View } from 'react-native';
+import { SafeAreaView, Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import Background from '../components/Background';
 import AppInput from '../components/AppInput';
 import AppButton from '../components/AppButton';
@@ -7,8 +7,12 @@ import CheckBoxWithText from '../components/CheckBoxWithText';
 import Snackbar from '../components/Snackbar';
 import theme from '../config/theme';
 import useLoginState from '../store/useLoginState';
+import { SCREEN_NAMES } from '../config/constants';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
+    const navigation = useNavigation();
+
     const { formData, errors, snackbarVisible, snackbarMessage, handleChange, handleLogin, isButtonDisabled, handleForgotPassword } = useLoginState();
 
     return (
@@ -41,18 +45,42 @@ const LoginScreen = () => {
                         error={errors.password} />
                     <CheckBoxWithText onForgotPassword={handleForgotPassword} />
                     <View style={{ flexGrow: 0.2 }} />
-                    <AppButton
+                    {/* <AppButton
                         title="LOGIN"
-                        onPress={handleLogin}
+                        onPress={SCREEN_NAMES.DASHBOARD}
                         width="full"
                         height={50}
                         borderRadius={6}
                         color={theme.colors.secondary}
                         textColor={theme.colors.primary}
-                        fontSize={14}
+                        fontSize={30}
                         letterSpacing={2}
                         font={theme.fonts.dmSansBold}
                         disabled={isButtonDisabled} />
+                         */}
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: isButtonDisabled ? theme.colors.disableColor : theme.colors.secondary,
+                            height: 50,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: 6,
+                            marginTop: 36,
+                            width: '100%',
+                        }}
+                        onPress={() => navigation.navigate(SCREEN_NAMES.DASHBOARD)}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: 20,
+                                letterSpacing: 2,
+                                fontFamily: theme.fonts.dmSansBold,
+                            }}
+                        >
+                            LOGIN
+                        </Text>
+                    </TouchableOpacity>
 
                     <Snackbar message={snackbarMessage} visible={snackbarVisible} />
                 </View>

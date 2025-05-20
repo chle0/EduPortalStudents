@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,21 +8,29 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  FlatList,
   PanResponder,
 } from 'react-native';
 import Background from '../components/Background';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { Calendar } from 'react-native-calendars';
+import moment from 'moment';
 
-const HomeScreen = (props) => {
+
+
+const DiaryScreen = () => {
   const navigation = useNavigation();
+  const [selectedTab, setSelectedTab] = useState('Today Diary');
+  const [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM'));
+  const [markedDates, setMarkedDates] = useState({});
+
 
   const images = [
     'https://images.pexels.com/photos/31449901/pexels-photo-31449901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     'https://images.pexels.com/photos/31887348/pexels-photo-31887348/free-photo-of-elegant-spring-white-flowers-in-bloom.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   ];
 
-  const names = [
+ const names = [
     'Grame',
     'Mike',
   ];
@@ -50,32 +59,78 @@ const HomeScreen = (props) => {
     },
   });
 
+  useEffect(() => {
+    const startOfMonth = moment(currentMonth).startOf('month').format('YYYY-MM-DD');
+    const endOfMonth = moment(currentMonth).endOf('month').format('YYYY-MM-DD');
+    const dates = {};
 
-  const diaryEntries = [
+    for (let day = moment(startOfMonth); day.isBefore(endOfMonth); day.add(1, 'days')) {
+      const dayKey = day.format('YYYY-MM-DD');
+      if (day.day() === 0) {
+        dates[dayKey] = {
+          selected: true,
+          marked: true,
+          dotColor: 'transparent',
+          color: '#FF7C1B',
+
+        };
+      } else {
+        dates[dayKey] = { marked: false };
+      }
+    }
+
+    setMarkedDates(dates);
+  }, [currentMonth]);
+
+  const data = [
     {
-      subject: 'Science',
-      title: 'Surface Areas and Volumes',
-      dateText: 'Assign Date',
+      id: '1',
+      subject: 'Mathematics',
+      heading: 'Surface Areas and Volumes',
       assignDate: '10 Nov 24',
-      lastSubmissionText: "Last Submission Date",
-      dueDate: '10 Dec 24',
+      lastSubmission: '10 Dec 24',
     },
     {
+      id: '2',
+      subject: 'Science',
+      heading: 'Electricity and Circuits',
+      assignDate: '11 Nov 24',
+      lastSubmission: '15 Dec 24',
+    },
+    {
+      id: '3',
       subject: 'English',
-      title: 'Stories and Summaries',
-      dateText: 'Assign Date',
-      assignDate: '10 Nov 24',
-      lastSubmissionText: "Last Submission Date",
-      dueDate: '10 Dec 24',
-
+      heading: 'Comprehension Practice',
+      assignDate: '12 Nov 24',
+      lastSubmission: '20 Dec 24',
     },
   ];
+
+  const renderCard = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate("DiaryDetail", { item })}
+      style={styles.card}>
+      <View style={styles.subjectTitleView}>
+        <Text style={styles.subjectTitle}>{item.subject}</Text>
+
+      </View>
+      <Text style={styles.cardHeading}>{item.heading}</Text>
+      <View style={styles.datesContainer}>
+        <Text style={styles.dateText}>Assign Date</Text>
+        <Text style={styles.dateValue}>{item.assignDate}</Text>
+      </View>
+      <View style={styles.datesContainer}>
+        <Text style={styles.dateText}>Last Submission Date</Text>
+        <Text style={styles.dateValue}>{item.lastSubmission}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
 
   return (
     <Background useImage={false}>
       <SafeAreaView style={styles.SafeAreaView}>
         <ScrollView contentContainerStyle={styles.container}>
-
           <ImageBackground style={styles.header}
             source={require('../assets/images/header.png')}
             imageStyle={{ borderRadius: 10 }}
@@ -89,6 +144,7 @@ const HomeScreen = (props) => {
                   <Text style={styles.session}>2023-2024</Text>
                 </View>
               </View>
+
               <View style={styles.imageWrapper} {...panResponder.panHandlers}>
                 <View style={{ flexDirection: 'row', width: '100%', marginLeft: 20 }}>
                   <View
@@ -129,106 +185,90 @@ const HomeScreen = (props) => {
             </View>
           </ImageBackground>
 
-          <View style={styles.grid}>
-            {[
-              { label: 'Results', image: require('../assets/images/results.png'), bgColor: '#FCDCDD' },
-              { label: 'Attendance', image: require('../assets/images/attendance.png'), bgColor: '#FAE9F6' },
-              { label: 'Fee History', image: require('../assets/images/dues_image.png'), bgColor: '#FFE7D4' },
-              { label: 'View Diary', image: require('../assets/images/diary.png'), bgColor: '#00BAAF26' },
-              { label: 'Date Sheet', image: require('../assets/images/date_sheet.png'), bgColor: '#FFF3E2' },
-              { label: 'Online Lecture', image: require('../assets/images/lecture.png'), bgColor: '#F4ECFD' },
-              { label: 'School Info', image: require('../assets/images/school_info.png'), bgColor: '#DBFAE3' },
-              { label: 'Complaints', image: require('../assets/images/complaints.png'), bgColor: '#F1F1C9' },
-            ].map((item, index) => (
-              <View key={index} style={styles.gridItemWrapper}>
-                <TouchableOpacity style={[styles.gridItem, { backgroundColor: item.bgColor }]}
 
-                  onPress={() => {
-
-                    if (item.label === 'View Diary') {
-                      navigation.navigate('DiaryScreen');
-
-                    }
-                    else if (item.label == "Results") {
-                      navigation.navigate('ResultScreen');
-
-                    }
-                    else if (item.label == "Fee History") {
-                      navigation.navigate('FeeHistory');
-
-                    }
-                  }}
-                >
-                  <Image source={item.image} style={styles.gridImage} />
-                </TouchableOpacity>
-                <Text style={styles.gridLabel}>{item.label}</Text>
-              </View>
-            ))}
-          </View>
-
-
-
-          <View style={styles.stats}>
-            <View style={styles.statBox}>
-              <Image
-                source={require('../assets/images/finger_scan.png')}
-                style={{
-                  alignSelf: 'flex-start',
-                  resizeMode: 'contain',
-
-
-                }}
-              />
-              <Text style={styles.statNumber}>80.39%</Text>
-              <Text style={styles.statText}>Attendance</Text>
-            </View>
-            <View style={styles.statBox}>
-              <Image
-                source={require('../assets/images/dues_image.png')}
-                style={{
-                  alignSelf: 'flex-start',
-                  resizeMode: 'contain',
-
-
-                }}
-              />
-              <Text style={styles.statNumber}>6400 Rs</Text>
-              <Text style={styles.statText}>Fees Due</Text>
-            </View>
-          </View>
-
-          <View style={styles.diaryHeader}>
-            <Text style={styles.sectionTitle}>Daily Diary</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewAll}>View All</Text>
+          <View style={styles.tabContainer}>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                selectedTab === 'Today Diary' && styles.activeTab,
+              ]}
+              onPress={() => setSelectedTab('Today Diary')}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  selectedTab === 'Today Diary' && styles.activeTabText,
+                ]}
+              >
+                Today Diary
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                selectedTab === 'Last Month' && styles.activeTab,
+              ]}
+              onPress={() => setSelectedTab('Last Month')}
+            >
+              <Text
+                style={[
+                  styles.tabText,
+                  selectedTab === 'Last Month' && styles.activeTabText,
+                ]}
+              >
+                Last Month
+              </Text>
             </TouchableOpacity>
           </View>
-          {diaryEntries.map((entry, index) => (
-            <View key={index} style={styles.diary}>
-              <View style={styles.diarySubjectView}>
-                <Text style={styles.diarySubject}>{entry.subject}</Text>
-              </View>
-              <Text style={styles.diaryTitle}>{entry.title}</Text>
-              <View style={styles.dueDateStyle}>
-                <Text style={styles.diaryDate}>
-                  {entry.dateText}
-                </Text>
-                <Text style={styles.diaryAssignDate}>
-                  {entry.assignDate}
-                </Text>
-              </View>
 
-              <View style={styles.dueDateStyle}>
-                <Text style={styles.diaryDate}>
-                  {entry.lastSubmissionText}
-                </Text>
-                <Text style={styles.diaryAssignDate}>
-                  {entry.dueDate}
-                </Text>
-              </View>
+
+
+          {selectedTab === 'Last Month' && (
+            <View style={styles.calendarContainer}>
+              <Calendar
+                current={currentMonth + '-01'}
+                markedDates={markedDates}
+                onDayPress={(day) => {
+                  console.log('Selected day:', day);
+                }}
+                hideExtraDays={true}
+                style={styles.calendar}
+                theme={{
+                  selectedDayBackgroundColor: 'rgba(248, 198, 163, 0.3)',
+                  selectedDayTextColor: '#343434',
+                  todayTextColor: '#FF7C1B',
+                  dayTextColor: '#343434',
+                  textMonthFontSize: 14,
+                  textMonthFontWeight: '700',
+                  textDayFontWeight: '400',
+                  dotColor: 'transparent',
+                  textDayStyle: {
+                    fontSize: 14,
+                    color: '#343434',
+                    fontWeight: '400',
+                  },
+                  textDayHeaderStyle: {
+                    color: '#343434',
+                    fontSize: 11,
+                    fontWeight: '500',
+                  },
+                  textDayHeaderFontSize: 11,
+                }}
+                markingType={'custom'}
+              />
 
             </View>
-          ))}
+          )}
+
+          {selectedTab === 'Today Diary' && (
+            <FlatList
+              data={data}
+              renderItem={renderCard}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.flatListContainer}
+            />
+          )}
+
         </ScrollView>
       </SafeAreaView>
     </Background>
@@ -238,17 +278,17 @@ const HomeScreen = (props) => {
 const styles = StyleSheet.create({
   SafeAreaView: {
     flex: 1,
-
+    width: '100%',
   },
   container: {
     width: '100%',
     justifyContent: 'flex-start',
-    paddingHorizontal: 10,
-    flexGrow: 1,
-    backgroundColor: "white",
-
+    paddingHorizontal: 5,
+    flexGrow: 1
   },
-
+  flatListContainer: {
+    paddingHorizontal: 8,
+  },
   imageWrapper: {
     position: 'relative',
     marginLeft: 25,
@@ -284,7 +324,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
     marginLeft: 20
-
   },
 
   roundedRectangle: {
@@ -301,6 +340,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     borderRadius: 50,
     marginRight: 5,
+
   },
 
   header: {
@@ -315,7 +355,7 @@ const styles = StyleSheet.create({
   schoolName: {
     fontSize: 12,
     fontWeight: '500',
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     color: 'rgba(255, 255, 255, 0.8)',
   },
   profileContainer: {
@@ -340,7 +380,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 5,
     alignSelf: 'flex-start',
-    marginTop: 10
+    marginTop: 10,
   },
   session: {
     fontSize: 14,
@@ -348,134 +388,99 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'rgba(255, 255, 255, 0.8)',
   },
-  grid: {
+  tabContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    alignSelf: 'center',
+    marginVertical: 10,
+    backgroundColor: '#FF7C1B',
+    borderRadius: 20,
+    marginHorizontal: 40
+
   },
-  gridItemWrapper: {
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
     alignItems: 'center',
-    width: '25%',
-    marginBottom: 10,
+    borderRadius: 20,
   },
-  gridItem: {
-    width: '80%',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: 'center',
+  activeTab: {
+    backgroundColor: '#FFF',
+    elevation: 2,
   },
-  gridImage: {
-    width: 28,
-    height: 28,
-    resizeMode: 'contain',
-  },
-  gridLabel: {
-    fontSize: 12,
-    color: '#343434',
-    textAlign: 'center',
-    marginTop: 5,
-    fontWeight: '500'
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  statBox: {
-    width: '48%',
-    backgroundColor: 'white',
-    alignItems: 'flex-start',
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  statNumber: {
-    fontSize: 32,
-    color: '#2B2B36',
-    fontWeight: '600',
-    textAlign: 'left'
-  },
-  statText: {
+  tabText: {
     fontSize: 14,
-    color: '#3E4954',
-    fontWeight: '400',
-
+    fontWeight: '500',
+    color: '#FFFFFF',
   },
-  diaryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#343434',
-    marginLeft: 10
-
-  },
-  viewAll: {
-    fontSize: 12,
+  activeTabText: {
     color: '#FF7C1B',
     fontWeight: '500',
-    marginRight: 10
+    fontSize: 14
   },
-  diary: {
-    backgroundColor: 'white',
-    padding: 15,
+  card: {
+    backgroundColor: '#FFF',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowRadius: 4,
-    elevation: 1,
-    marginBottom: 10,
-
+    padding: 15,
+    marginVertical: 5,
+    elevation: 1.2,
   },
-  diaryItem: {
-    marginBottom: 15,
-  },
-
-  diarySubjectView: {
+  subjectTitleView: {
     backgroundColor: 'rgba(248, 198, 163, 0.3)',
     borderRadius: 15,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     alignSelf: 'flex-start',
     textAlign: 'center',
     alignContent: 'center',
     alignItems: 'center',
-    paddingVertical: 3
+    paddingVertical: 3,
+    marginBottom: 8
   },
-  diarySubject: {
+  subjectTitle: {
     fontSize: 14,
     fontWeight: '500',
     color: '#FF7C1B',
     textAlign: 'center',
-    marginBottom: 2
-
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: "center"
   },
-  diaryTitle: {
+  cardHeading: {
     fontSize: 14,
     fontWeight: '700',
     color: '#343434',
-    marginTop: 10
+    marginBottom: 10,
   },
-  diaryDate: {
-    fontSize: 14,
-    color: '#777777',
-    fontWeight: '400'
-  },
-  dueDateStyle: {
+  datesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10
+    marginBottom: 5,
   },
-  diaryAssignDate: {
+  dateText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#777777',
+  },
+  dateValue: {
     fontSize: 12,
+    fontWeight: '700',
     color: '#3A3A3A',
-    fontWeight: '700'
-  }
+  },
+
+  calendarContainer: {
+    marginVertical: 2,
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+
+  calendar: {
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
 });
 
-export default HomeScreen;
+export default DiaryScreen;

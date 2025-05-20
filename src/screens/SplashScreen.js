@@ -11,7 +11,7 @@ const SplashScreen = () => {
   useEffect(() => {
     setTimeout(() => {
       reset(SCREEN_NAMES.LOGIN);
-    }, 5000);
+    }, 3000);
   }, []);
 
   return (

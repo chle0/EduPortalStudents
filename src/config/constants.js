@@ -3,4 +3,6 @@ export const SCREEN_NAMES = {
   LOGIN: 'Login',
   DASHBOARD: 'Dashboard',
   HOME: 'Home',
+  Notification: 'Notification',
+
 };

@@ -39,7 +39,10 @@ const AppBar = () => {
           icon={() =>
             hasUnreadNotifications ? <EmptyNotifications /> : <Notifications />
           }
-          onPress={() => setHasUnreadNotifications(!hasUnreadNotifications)}
+          onPress={() => {
+            setHasUnreadNotifications(!hasUnreadNotifications)
+            navigation.navigate('NotificationScreen')
+          }}
         />
       </View>
     </Appbar.Header>

@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image } from "react-native";
 
@@ -9,7 +10,7 @@ const notifications = [
         time: "5 minutes ago",
         image: require('../assets/images/date_sheet.png'),
         backgroundColor: "#FFECDE",
-        imageBackgroundColor:'#FFFFFF'
+        imageBackgroundColor: '#FFFFFF'
     },
     {
         id: "2",
@@ -18,7 +19,7 @@ const notifications = [
         time: "45 minutes ago",
         image: require('../assets/images/results.png'),
         backgroundColor: "#FFFFFF",
-        imageBackgroundColor:'#F3DBDC'
+        imageBackgroundColor: '#F3DBDC'
 
     },
     {
@@ -28,40 +29,45 @@ const notifications = [
         time: "5 Hours ago",
         image: require('../assets/images/dues_image.png'),
         backgroundColor: "#FFFFFF",
-        imageBackgroundColor:'#FFE7D4'
+        imageBackgroundColor: '#FFE7D4'
 
     },
 ];
 
 
 const NotificationScreen = (props) => {
- 
+    const navigation = useNavigation();
+
+
     const renderItem = ({ item }) => (
-        <View style={[styles.notificationItem, { backgroundColor: item.backgroundColor }]}>
-           
-           <View
-           
-           style={[styles.notificationImageBg, { backgroundColor: item.imageBackgroundColor }]}
-           >
-           <Image source={item.image} style={styles.notificationImage} />
-           </View>
+        <TouchableOpacity
+
+            onPress={() => navigation.navigate("NotificationDetail", { item })}
+            style={[styles.notificationItem, { backgroundColor: item.backgroundColor,marginHorizontal:16 }]}>
+
+            <View
+
+                style={[styles.notificationImageBg, { backgroundColor: item.imageBackgroundColor }]}
+            >
+                <Image source={item.image} style={styles.notificationImage} />
+            </View>
             <View style={styles.notificationContent}>
                 <Text style={styles.notificationTitle}>{item.title}</Text>
                 <Text style={styles.notificationDescription}>{item.description}</Text>
-              <View style={styles.itemSpace}>
-              <Text style={styles.notificationTime}>{item.time}</Text>
-              <Text style={styles.deleteText}>Delete</Text>
+                <View style={styles.itemSpace}>
+                    <Text style={styles.notificationTime}>{item.time}</Text>
+                    <Text style={styles.deleteText}>Delete</Text>
 
-              </View>
+                </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity
-                  onPress={() => props.navigation.goBack()} 
+                    onPress={() => props.navigation.goBack()}
                 >
                     <Image
                         source={require('../assets/images/back_icon.png')}
@@ -83,15 +89,26 @@ const NotificationScreen = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FFFFFF",
-        paddingHorizontal: 16,
-        paddingTop: 16,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     header: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 16,
+        backgroundColor: 'white',
+        height: 50,
+        width: '100%',
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.5,
+        elevation: 1
+
     },
     arrowIcon: {
         marginLeft: 10,
@@ -100,9 +117,9 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 12,
         fontWeight: "500",
-        lineHeight:18,
+        lineHeight: 18,
         color: "#000000",
-        marginRight:10
+        marginRight: 10
     },
     iconContainer: {
         width: 40,
@@ -127,7 +144,7 @@ const styles = StyleSheet.create({
         color: "#6B7280",
         marginBottom: 8,
     },
-    itemSpace:{
+    itemSpace: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -140,7 +157,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#FF7C1B",
         fontWeight: "400",
-        marginRight:10
+        marginRight: 10
     },
 
     notificationItem: {
@@ -153,10 +170,10 @@ const styles = StyleSheet.create({
     notificationImageBg: {
         padding: 10,
         borderRadius: 30,
-        width:40,
-        height:40,
+        width: 40,
+        height: 40,
         marginRight: 15,
-        marginTop:15
+        marginTop: 15
     },
     notificationImage: {
         width: 20,

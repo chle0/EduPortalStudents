@@ -5,6 +5,7 @@ import AppBar from '../components/AppBar';
 import CustomDrawer from '../components/CustomDrawer';
 import { SCREEN_NAMES } from '../config/constants';
 import { useNotifications } from '../utils/NotificationsContext';
+import NotificationScreen from '../screens/NotificationScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -24,6 +25,7 @@ const DrawerNavigator = () => {
         }
         >
             <Drawer.Screen name={SCREEN_NAMES.HOME} component={HomeScreen} />
+
         </Drawer.Navigator>
     );
 };
